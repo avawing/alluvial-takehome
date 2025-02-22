@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Build and run the application
   app:
@@ -7,6 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile
       target: build-release-stage
+    image: avawing/alluvial-app
     ports:
       - "8080:8080"
     user: nonroot:nonroot
