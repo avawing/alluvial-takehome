@@ -30,8 +30,15 @@ spec:
     spec:
       containers:
         - name: alluvial-app
-          image: avawing/alluvial-app        # Make sure this matches your built Go image
+          image: avawing/alluvial-app:latest        # Make sure this matches your built Go image
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
           command: ["/docker-gs-ping"]
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            failureThreshold: 3
