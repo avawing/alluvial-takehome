@@ -13,6 +13,7 @@ type Handler struct {
 	InfuraService     *services.InfuraService
 	AlchemyService    *services.AlchemyService
 	ChainstackService *services.ChainstackService
+	LoadBalancer      *utils.LoadBalancer
 }
 
 type Config struct {
@@ -20,6 +21,7 @@ type Config struct {
 	InfuraService     *services.InfuraService
 	AlchemyService    *services.AlchemyService
 	ChainstackService *services.ChainstackService
+	LoadBalancer      *utils.LoadBalancer
 }
 
 func NewHandler(c *Config) {
@@ -27,6 +29,7 @@ func NewHandler(c *Config) {
 		InfuraService:     c.InfuraService,
 		AlchemyService:    c.AlchemyService,
 		ChainstackService: c.ChainstackService,
+		LoadBalancer:      c.LoadBalancer,
 	}
 	c.R.GET("/", h.HelloWorld)
 
@@ -55,7 +58,7 @@ func (h *Handler) Healthz(c *gin.Context) {
 func (h *Handler) GetEthBalance(c *gin.Context) {
 	address := c.Param("address")
 
-	if amt, err := utils.MakeRequests(c, h.InfuraService, address); err != nil {
+	if amt, err := h.LoadBalancer.MakeRequests(c, address); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 	} else {
 		c.JSON(200, gin.H{"balance": amt})

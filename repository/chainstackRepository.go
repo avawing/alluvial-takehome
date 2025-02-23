@@ -17,7 +17,7 @@ func NewChainstackRepository(c *http.Client, a string) *Repository {
 	}
 }
 
-func (r *Repository) GetBalanceByIDCS(c context.Context, id string) (string, error) {
+func (r *Repository) GetBalanceByIDCS(_ context.Context, id string) (string, error) {
 	url := fmt.Sprintf("https://base-mainnet.core.chainstack.com/%s", r.APIKey)
 	reqBody, jsonErr := json.Marshal(models.ChainstackRequest{
 		Jsonrpc: "2.0",

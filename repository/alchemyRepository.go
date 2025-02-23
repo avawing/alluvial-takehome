@@ -17,7 +17,7 @@ func NewAlchemyRepository(c *http.Client, a string) *Repository {
 	}
 }
 
-func (r *Repository) GetBalanceByIDAlchemy(c context.Context, id string) (string, error) {
+func (r *Repository) GetBalanceByIDAlchemy(_ context.Context, id string) (string, error) {
 	url := fmt.Sprintf("https://eth-mainnet.g.alchemy.com/v2/%s", r.APIKey)
 	reqBody, jsonErr := json.Marshal(models.AlchemyRequest{
 		Jsonrpc: "2.0",

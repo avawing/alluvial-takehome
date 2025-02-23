@@ -4,6 +4,7 @@ import (
 	"alluvial/handlers"
 	"alluvial/repository"
 	"alluvial/services"
+	"alluvial/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"os"
@@ -40,6 +41,7 @@ func inject() *gin.Engine {
 				Timeout:       10 * time.Second},
 			INFURA_API_KEY,
 		)})
+
 	A := services.NewAlchemyService(&services.ClientConfig{
 		AlchemyRepository: repository.NewAlchemyRepository(
 			&http.Client{
@@ -50,6 +52,7 @@ func inject() *gin.Engine {
 			},
 			ALCHEMY_API_KEY),
 	})
+
 	C := services.NewChainstackService(&services.ClientConfig{
 		AlchemyRepository: repository.NewChainstackRepository(
 			&http.Client{
@@ -61,12 +64,15 @@ func inject() *gin.Engine {
 			CHAINSTACK_API_KEY),
 	})
 
+	lb := utils.NewLoadBalancer([]utils.Server{A, S, C})
+
 	handlers.NewHandler(
 		&handlers.Config{
 			R:                 router,
 			InfuraService:     S,
 			AlchemyService:    A,
 			ChainstackService: C,
+			LoadBalancer:      lb,
 		})
 	return router
 }
