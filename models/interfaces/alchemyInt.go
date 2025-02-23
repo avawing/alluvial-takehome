@@ -2,7 +2,7 @@ package interfaces
 
 import "context"
 
-// InfuraServiceInterface defines methods the handler layer expects
+// AlchemyServiceInterface defines methods the handler layer expects
 // any service it interacts with to implement
 type AlchemyServiceInterface interface {
 	GetBalance(c context.Context, id string) (string, error)

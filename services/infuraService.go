@@ -8,8 +8,9 @@ import (
 // ClientConfig will hold repositories that will eventually be injected into
 // the service layer
 type ClientConfig struct {
-	InfuraRepository  interfaces.InfuraRepositoryInterface
-	AlchemyRepository interfaces.AlchemyRepositoryInterface
+	InfuraRepository     interfaces.InfuraRepositoryInterface
+	AlchemyRepository    interfaces.AlchemyRepositoryInterface
+	ChainstackRepository interfaces.ChainStackRepositoryInterface
 }
 
 // InfuraService acts as a struct for injecting an implementation of InfuraRepository

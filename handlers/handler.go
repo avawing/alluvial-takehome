@@ -10,19 +10,23 @@ import (
 )
 
 type Handler struct {
-	InfuraService  *services.InfuraService
-	AlchemyService *services.AlchemyService
+	InfuraService     *services.InfuraService
+	AlchemyService    *services.AlchemyService
+	ChainstackService *services.ChainstackService
 }
 
 type Config struct {
-	R              *gin.Engine
-	InfuraService  *services.InfuraService
-	AlchemyService *services.AlchemyService
+	R                 *gin.Engine
+	InfuraService     *services.InfuraService
+	AlchemyService    *services.AlchemyService
+	ChainstackService *services.ChainstackService
 }
 
 func NewHandler(c *Config) {
 	h := &Handler{
-		InfuraService: c.InfuraService,
+		InfuraService:     c.InfuraService,
+		AlchemyService:    c.AlchemyService,
+		ChainstackService: c.ChainstackService,
 	}
 	c.R.GET("/", h.HelloWorld)
 

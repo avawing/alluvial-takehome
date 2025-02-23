@@ -16,6 +16,7 @@ import (
 
 var INFURA_API_KEY string
 var ALCHEMY_API_KEY string
+var CHAINSTACK_API_KEY string
 
 func init() {
 	err := godotenv.Load(".env")
@@ -24,6 +25,7 @@ func init() {
 	}
 	INFURA_API_KEY = os.Getenv("INFURA_API_KEY")
 	ALCHEMY_API_KEY = os.Getenv("ALCHEMY_API_KEY")
+	CHAINSTACK_API_KEY = os.Getenv("CHAINSTACK_API_KEY")
 }
 
 func inject() *gin.Engine {
@@ -48,12 +50,23 @@ func inject() *gin.Engine {
 			},
 			ALCHEMY_API_KEY),
 	})
+	C := services.NewChainstackService(&services.ClientConfig{
+		AlchemyRepository: repository.NewChainstackRepository(
+			&http.Client{
+				Transport:     nil,
+				CheckRedirect: nil,
+				Jar:           nil,
+				Timeout:       10 * time.Second,
+			},
+			CHAINSTACK_API_KEY),
+	})
 
 	handlers.NewHandler(
 		&handlers.Config{
-			R:              router,
-			InfuraService:  S,
-			AlchemyService: A,
+			R:                 router,
+			InfuraService:     S,
+			AlchemyService:    A,
+			ChainstackService: C,
 		})
 	return router
 }
