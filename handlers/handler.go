@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"alluvial/services"
+	"alluvial/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
@@ -8,24 +10,27 @@ import (
 )
 
 type Handler struct {
+	InfuraService *services.InfuraService
 }
 
 type Config struct {
-	R *gin.Engine
+	R             *gin.Engine
+	InfuraService *services.InfuraService
 }
 
+var INFURA_API_KEY string
+
 func NewHandler(c *Config) {
-	h := &Handler{}
+	h := &Handler{
+		InfuraService: c.InfuraService,
+	}
 	c.R.GET("/", h.HelloWorld)
 
 	c.R.GET("/metrics", gin.WrapH(promhttp.Handler()))
-	c.R.GET("/health", h.Healthz)
 	c.R.GET("/healthz", h.Healthz)
 
 	eth := c.R.Group("/eth")
-	eth.GET("/balance/:address", func(c *gin.Context) {
-		c.JSON(200, gin.H{"balance": "0x" + c.Param("address")})
-	})
+	eth.GET("/balance/:address", h.GetEthBalance)
 
 }
 
@@ -41,4 +46,11 @@ func (h *Handler) Healthz(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusOK, gin.H{"status": http.StatusOK})
 	}
+}
+
+func (h *Handler) GetEthBalance(c *gin.Context) {
+	address := c.Param("address")
+
+	utils.MakeRequests(c, h.InfuraService, address)
+	c.JSON(200, gin.H{"balance": "0x" + c.Param("address")})
 }
