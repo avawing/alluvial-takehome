@@ -7,17 +7,18 @@ import (
 	"alluvial/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	"os"
-	"time"
 
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"time"
 )
 
 var INFURA_API_KEY string
 var ALCHEMY_API_KEY string
 var CHAINSTACK_API_KEY string
+var CHAINSTACK_API_NODE string
 
 func init() {
 	err := godotenv.Load(".env")
@@ -27,6 +28,7 @@ func init() {
 	INFURA_API_KEY = os.Getenv("INFURA_API_KEY")
 	ALCHEMY_API_KEY = os.Getenv("ALCHEMY_API_KEY")
 	CHAINSTACK_API_KEY = os.Getenv("CHAINSTACK_API_KEY")
+	CHAINSTACK_API_NODE = os.Getenv("CHAINSTACK_NODE")
 }
 
 func inject() *gin.Engine {
@@ -54,14 +56,16 @@ func inject() *gin.Engine {
 	})
 
 	C := services.NewChainstackService(&services.ClientConfig{
-		AlchemyRepository: repository.NewChainstackRepository(
+		ChainstackRepository: repository.NewChainstackRepository(
 			&http.Client{
 				Transport:     nil,
 				CheckRedirect: nil,
 				Jar:           nil,
 				Timeout:       10 * time.Second,
 			},
-			CHAINSTACK_API_KEY),
+			CHAINSTACK_API_KEY,
+			CHAINSTACK_API_NODE,
+		),
 	})
 
 	lb := utils.NewLoadBalancer([]utils.Server{A, S, C})

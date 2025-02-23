@@ -10,15 +10,16 @@ import (
 	"net/http"
 )
 
-func NewChainstackRepository(c *http.Client, a string) *Repository {
+func NewChainstackRepository(c *http.Client, a, n string) *Repository {
 	return &Repository{
 		Client: c,
 		APIKey: a,
+		Node:   n,
 	}
 }
 
 func (r *Repository) GetBalanceByIDCS(_ context.Context, id string) (string, error) {
-	url := fmt.Sprintf("https://base-mainnet.core.chainstack.com/%s", r.APIKey)
+	url := r.Node
 	reqBody, jsonErr := json.Marshal(models.ChainstackRequest{
 		Jsonrpc: "2.0",
 		Method:  "eth_getBalance",
@@ -33,6 +34,8 @@ func (r *Repository) GetBalanceByIDCS(_ context.Context, id string) (string, err
 	}
 
 	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(reqBody))
+
+	req.Header.Set("Authorization", "Bearer "+r.APIKey)
 	if err != nil {
 		return "", fmt.Errorf("GetBalanceByIDCS: %v+", err)
 	}

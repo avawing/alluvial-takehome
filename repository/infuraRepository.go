@@ -13,6 +13,7 @@ import (
 type Repository struct {
 	Client *http.Client
 	APIKey string
+	Node   string
 }
 
 func NewInfuraRepository(c *http.Client, a string) *Repository {
