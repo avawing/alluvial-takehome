@@ -10,15 +10,15 @@ import (
 )
 
 type Handler struct {
-	InfuraService *services.InfuraService
+	InfuraService  *services.InfuraService
+	AlchemyService *services.AlchemyService
 }
 
 type Config struct {
-	R             *gin.Engine
-	InfuraService *services.InfuraService
+	R              *gin.Engine
+	InfuraService  *services.InfuraService
+	AlchemyService *services.AlchemyService
 }
-
-var INFURA_API_KEY string
 
 func NewHandler(c *Config) {
 	h := &Handler{
@@ -51,6 +51,9 @@ func (h *Handler) Healthz(c *gin.Context) {
 func (h *Handler) GetEthBalance(c *gin.Context) {
 	address := c.Param("address")
 
-	utils.MakeRequests(c, h.InfuraService, address)
-	c.JSON(200, gin.H{"balance": "0x" + c.Param("address")})
+	if amt, err := utils.MakeRequests(c, h.InfuraService, address); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+	} else {
+		c.JSON(200, gin.H{"balance": amt})
+	}
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"os"
+	"time"
 
 	"fmt"
 	"log"
@@ -14,6 +15,7 @@ import (
 )
 
 var INFURA_API_KEY string
+var ALCHEMY_API_KEY string
 
 func init() {
 	err := godotenv.Load(".env")
@@ -21,6 +23,7 @@ func init() {
 		log.Fatalf("Error loading .env file: %v", err)
 	}
 	INFURA_API_KEY = os.Getenv("INFURA_API_KEY")
+	ALCHEMY_API_KEY = os.Getenv("ALCHEMY_API_KEY")
 }
 
 func inject() *gin.Engine {
@@ -32,14 +35,25 @@ func inject() *gin.Engine {
 				Transport:     nil,
 				CheckRedirect: nil,
 				Jar:           nil,
-				Timeout:       10},
+				Timeout:       10 * time.Second},
 			INFURA_API_KEY,
 		)})
+	A := services.NewAlchemyService(&services.ClientConfig{
+		AlchemyRepository: repository.NewAlchemyRepository(
+			&http.Client{
+				Transport:     nil,
+				CheckRedirect: nil,
+				Jar:           nil,
+				Timeout:       10 * time.Second,
+			},
+			ALCHEMY_API_KEY),
+	})
 
 	handlers.NewHandler(
 		&handlers.Config{
-			R:             router,
-			InfuraService: S,
+			R:              router,
+			InfuraService:  S,
+			AlchemyService: A,
 		})
 	return router
 }
