@@ -1,9 +1,10 @@
 package utils
 
 import (
+	"github.com/gin-gonic/gin"
+
 	"context"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"math/big"
 	"sync"
 )
